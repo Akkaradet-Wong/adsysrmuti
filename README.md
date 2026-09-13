@@ -206,14 +206,14 @@ npm run dev
       <td align="center" width="380" valign="top">
         <br>
         <a href="https://github.com/nattagrit">
-          <img src="https://github.com/nattagrit.png" width="105" height="105" alt="Nattagrit Kongying" />
+          <img src="https://github.com/nattagrit.png" width="105" height="105" alt="Nattagrit Rueangmaroeng" />
         </a>
         <br><br>
         <a href="https://github.com/nattagrit">
-          <strong>นายณัฐกฤต คงยิ่ง</strong>
+          <strong>นายณัฐกฤตย์ เรืองมะเริง</strong>
         </a>
         <br>
-        <sub>Nattagrit Kongying</sub>
+        <sub>Nattagrit Rueangmaroeng</sub>
         <br><br>
         <b>Backend &amp; Database Engineering</b>
         <br><br>
