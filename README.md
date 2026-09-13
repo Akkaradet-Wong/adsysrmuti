@@ -181,7 +181,47 @@ npm run dev
 
 ## ผู้จัดทำโครงงาน (Project Authors)
 
-* **นายอัครเดช วงศ์บำหราบ (Akkaradet Wongbamrap)** — Frontend & System Architecture ([@Akkaradet-Wong](https://github.com/Akkaradet-Wong))
-* **นายณัฐกฤต คงยิ่ง (Nattagrit Kongying)** — Backend & Database Engineering ([@nattagrit](https://github.com/nattagrit))
+<table width="100%">
+  <tr>
+    <td width="50%" align="center" valign="middle">
+      <a href="https://github.com/Akkaradet-Wong">
+        <img src="https://github.com/Akkaradet-Wong.png" width="96" height="96" style="border-radius: 50%;" alt="Akkaradet Wongbamrap" />
+      </a>
+      <br><br>
+      <a href="https://github.com/Akkaradet-Wong">
+        <strong>นายอัครเดช วงศ์บำหราบ</strong>
+      </a>
+      <br>
+      <sub>Akkaradet Wongbamrap</sub>
+      <br><br>
+      <b>Frontend & System Architecture</b>
+      <br><br>
+      <a href="https://github.com/Akkaradet-Wong">
+        <img src="https://img.shields.io/badge/GitHub-Akkaradet--Wong-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Profile" />
+      </a>
+    </td>
+    <td width="50%" align="center" valign="middle">
+      <a href="https://github.com/nattagrit">
+        <img src="https://github.com/nattagrit.png" width="96" height="96" style="border-radius: 50%;" alt="Nattagrit Kongying" />
+      </a>
+      <br><br>
+      <a href="https://github.com/nattagrit">
+        <strong>นายณัฐกฤต คงยิ่ง</strong>
+      </a>
+      <br>
+      <sub>Nattagrit Kongying</sub>
+      <br><br>
+      <b>Backend & Database Engineering</b>
+      <br><br>
+      <a href="https://github.com/nattagrit">
+        <img src="https://img.shields.io/badge/GitHub-nattagrit-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub Profile" />
+      </a>
+    </td>
+  </tr>
+</table>
 
-*โครงงานปริญญานิพนธ์ สาขาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน*
+<br>
+
+<p align="center">
+  <i>โครงงานปริญญานิพนธ์ สาขาวิศวกรรมคอมพิวเตอร์ คณะวิศวกรรมศาสตร์และเทคโนโลยี มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน</i>
+</p>
