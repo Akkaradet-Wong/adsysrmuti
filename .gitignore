@@ -1,0 +1,84 @@
+# =========================================
+# 🔒 1. Environment Variables (สำคัญที่สุด!)
+# ห้ามเอาไฟล์ที่มีรหัสผ่านขึ้น GitHub เด็ดขาด
+# =========================================
+**/.env
+.env
+.env.local
+.env.*
+!.env.example
+
+# =========================================
+# 📦 2. Dependencies (ขยะและไฟล์ขนาดใหญ่)
+# =========================================
+node_modules
+**/node_modules
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# =========================================
+# 🏗️ 3. Build & Output (ไฟล์ที่ระบบสร้างขึ้นเอง)
+# =========================================
+dist
+dist-ssr
+build/
+coverage/
+
+# =========================================
+# 🐛 4. Logs (ไฟล์บันทึกข้อผิดพลาด)
+# =========================================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================================
+# 💻 5. IDE & System Files (ไฟล์ส่วนตัวของเครื่อง)
+# =========================================
+.vercel
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+# =========================================
+# 🚀 Supabase & Local Development
+# =========================================
+.supabase/
+supabase/.temp/
+supabase/.tmp/
+
+# =========================================
+# 📂 Uploads (ห้ามเอาไฟล์ที่อัปโหลดเข้าเครื่องขึ้น Git)
+# =========================================
+public/uploads/
+uploads/
+
+# =========================================
+# ☁️ Vercel Deployment Config
+# =========================================
+.vercel/
+
+# ซ่อนโฟลเดอร์ supabase ทั้งหมด
+supabase/
+.supabase/
+# Supabase
+# ไม่เอา .temp เพราะเป็นไฟล์ชั่วคราวจากการรันในเครื่อง
+supabase/.temp
+
+# หากในอนาคตมีโฟลเดอร์เก็บข้อมูล Database ชั่วคราว (ถ้ามี)
+supabase/.data
+# หรือถ้าอยากซ่อนแค่ฟังก์ชัน
+supabase/functions/
+credentials.json
+backend/credentials.json
+.env
+*.env

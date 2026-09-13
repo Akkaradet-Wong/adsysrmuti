@@ -1,0 +1,20 @@
+{
+  "engines": {
+    "node": "24.x"
+  },
+  "devDependencies": {
+    "docx": "^9.7.1",
+    "supabase": "^2.109.0"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.21",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "@fullcalendar/react": "^7.0.1",
+    "@fullcalendar/timegrid": "^6.1.21",
+    "@vercel/speed-insights": "^2.0.0",
+    "browser-image-compression": "^2.0.2",
+    "lucide-react": "^1.27.0",
+    "sweetalert2": "^11.26.25"
+  }
+}

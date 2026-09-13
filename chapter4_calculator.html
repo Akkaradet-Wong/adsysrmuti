@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เครื่องมือคำนวณสถิติบทที่ 4 (x̄, S.D., %, แปลผล)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+    }
+    .academic-font {
+      font-family: 'Sarabun', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-blue-700 via-indigo-700 to-sky-600 rounded-3xl p-6 md:p-8 text-white shadow-xl">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider uppercase mb-2">
+            เครื่องมือช่วยทำเล่มโครงงาน บทที่ 4
+          </span>
+          <h1 class="text-2xl md:text-3xl font-bold">โปรแกรมคำนวณค่าสถิติ x̄, S.D., ร้อยละ และแปลผล</h1>
+          <p class="text-blue-100 text-sm md:text-base mt-1">
+            คำนวณแบบประเมิน 4 ด้านอัตโนมัติ พร้อมปุ่มคัดลอกตารางไปวางใน Microsoft Word ได้ทันที
+          </p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[200px]">
+          <div class="text-xs text-blue-200">เกณฑ์คะแนนเต็ม</div>
+          <div class="text-2xl font-bold">5.00 คะแนน</div>
+          <div class="text-[11px] text-blue-200 mt-0.5">เกณฑ์ยอมรับ &ge; 3.51 (ระดับดีขึ้นไป)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group Selector Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+      <button onclick="switchTab('advisor')" id="tab-advisor" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all bg-blue-600 text-white shadow-md">
+        👨‍🏫 1. กลุ่มอาจารย์และผู้ดูแลระบบ (5 คน)
+      </button>
+      <button onclick="switchTab('student')" id="tab-student" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+        🎓 2. กลุ่มนักศึกษา (20 คน)
+      </button>
+      <button onclick="switchTab('custom')" id="tab-custom" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+        ⚡ 3. โหมดกำหนดเอง / วางคะแนนจาก Excel
+      </button>
+    </div>
+
+    <!-- Main Container -->
+    <div id="calculator-content" class="space-y-8">
+      <!-- Dynamic Form Sections will be rendered here -->
+    </div>
+
+  </div>
+
+  <script>
+    // Data definition for standard evaluation aspects
+    const defaultData = {
+      advisor: {
+        title: "กลุ่มอาจารย์ที่ปรึกษาและผู้ดูแลระบบ",
+        respondents: 5,
+        aspects: [
+          {
+            name: "ด้านความสามารถในการทำงานตามระบบ (Performance Test)",
+            shortName: "ด้านความสามารถในการทำงานตามระบบ",
+            questions: [
+              { text: "ระบบสามารถจัดการข้อมูลผู้ใช้และอนุมัติสิทธิ์ได้อย่างถูกต้อง", scores: [5, 5, 5, 4, 5] },
+              { text: "ระบบสามารถตั้งค่าความเชี่ยวชาญและกำหนดโควตารับกลุ่มได้", scores: [5, 4, 5, 4, 5] },
+              { text: "ระบบสามารถพิจารณาคำร้อง (อนุมัติ/ปฏิเสธ) ได้อย่างมีประสิทธิภาพ", scores: [5, 5, 5, 4, 5] },
+              { text: "ระบบสามารถสร้างห้องเรียน มอบหมายงาน และตรวจงานได้ครบถ้วน", scores: [5, 4, 5, 5, 4] },
+              { text: "ระบบสามารถสนทนาและส่งข้อความแบบ Real-time Chat ได้อย่างต่อเนื่อง", scores: [5, 5, 5, 4, 5] }
+            ]
+          },
+          {
+            name: "ด้านการใช้งานของระบบ (Functional & Usability Test)",
+            shortName: "ด้านการใช้งานของระบบ",
+            questions: [
+              { text: "ความสะดวก รวดเร็ว ในการเข้าสู่ระบบและออกจากระบบ", scores: [5, 5, 5, 4, 5] },
+              { text: "การจัดหมวดหมู่เมนูมีความชัดเจนและง่ายต่อการค้นหา", scores: [5, 4, 5, 5, 4] },
+              { text: "การออกแบบหน้าจอและรูปแบบตัวอักษรมีความสวยงาม อ่านง่าย", scores: [4, 5, 5, 4, 5] },
+              { text: "ความสะดวกในการตรวจงานและให้ข้อเสนอแนะแก่นักศึกษา", scores: [5, 5, 5, 4, 5] }
+            ]
+          },
+          {
+            name: "ด้านความน่าเชื่อถือในการทำงานของระบบ (Reliability Test)",
+            shortName: "ด้านความน่าเชื่อถือในการทำงานของระบบ",
+            questions: [
+              { text: "ระบบมีความเสถียร ไม่เกิดข้อผิดพลาดขณะใช้งาน", scores: [5, 4, 5, 4, 5] },
+              { text: "ความเร็วในการโหลดข้อมูลและการประมวลผลของระบบ", scores: [4, 5, 5, 4, 5] },
+              { text: "ระบบการแจ้งเตือนและการรับส่งข้อความ Real-time มีความแม่นยำ", scores: [5, 5, 5, 4, 5] }
+            ]
+          },
+          {
+            name: "ด้านความปลอดภัยของระบบ (Security Test)",
+            shortName: "ด้านความปลอดภัยของระบบ",
+            questions: [
+              { text: "ระบบมีการควบคุมสิทธิ์การเข้าถึงข้อมูลตามบทบาท (Role) อย่างถูกต้อง", scores: [5, 5, 5, 5, 5] },
+              { text: "ระบบมีการแจ้งเตือนเมื่อพบข้อผิดพลาดหรือการกระทำที่ไม่ถูกต้อง", scores: [5, 5, 4, 5, 5] },
+              { text: "การจัดเก็บข้อมูลและประวัติการใช้งาน (Activity Logs) มีความปลอดภัย", scores: [5, 5, 5, 4, 5] }
+            ]
+          }
+        ]
+      },
+      student: {
+        title: "กลุ่มนักศึกษา",
+        respondents: 20,
+        aspects: [
+          {
+            name: "ด้านความสามารถในการทำงานตามระบบ (Performance Test)",
+            shortName: "ด้านความสามารถในการทำงานตามระบบ",
+            questions: [
+              { text: "ระบบสามารถค้นหาอาจารย์ที่ปรึกษาตามความเชี่ยวชาญได้สะดวก", scores: [5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4] },
+              { text: "สามารถส่งคำร้องขอเป็นที่ปรึกษาโครงงานและตรวจสอบสถานะได้", scores: [5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5] },
+              { text: "สามารถเข้าร่วมห้องเรียนและส่งไฟล์รายงานความคืบหน้าได้ถูกต้อง", scores: [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 5] },
+              { text: "ระบบแชท Real-time ช่วยให้สื่อสารกับอาจารย์ได้รวดเร็ว", scores: [5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5] }
+            ]
+          },
+          {
+            name: "ด้านการใช้งานของระบบ (Functional & Usability Test)",
+            shortName: "ด้านการใช้งานของระบบ",
+            questions: [
+              { text: "หน้าจอระบบสวยงาม ทันสมัย และจัดวางเมนูเข้าใจง่าย", scores: [5, 4, 5, 5, 4, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 4, 5, 5, 4] },
+              { text: "ตัวหนังสืออ่านง่ายและขนาดองค์ประกอบเหมาะสม", scores: [5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4] },
+              { text: "การใช้งานบนสมาร์ตโฟน/แท็บเล็ตมีความสะดวก (Responsive)", scores: [4, 5, 5, 4, 5, 4, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5, 4, 5, 5, 4] }
+            ]
+          },
+          {
+            name: "ด้านความน่าเชื่อถือในการทำงานของระบบ (Reliability Test)",
+            shortName: "ด้านความน่าเชื่อถือในการทำงานของระบบ",
+            questions: [
+              { text: "ระบบมีความรวดเร็วในการประมวลผลและการบันทึกข้อมูล", scores: [5, 4, 5, 5, 4, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5, 4, 5, 5, 4] },
+              { text: "การแจ้งเตือนสถานะคำร้องและข้อความใหม่มีความแม่นยำ", scores: [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 5] }
+            ]
+          },
+          {
+            name: "ด้านความปลอดภัยของระบบ (Security Test)",
+            shortName: "ด้านความปลอดภัยของระบบ",
+            questions: [
+              { text: "ระบบการสมัครสมาชิกและเข้าสู่ระบบมีความปลอดภัย", scores: [5, 5, 5, 4, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5] },
+              { text: "มีการป้องกันการแก้ไขข้อมูลที่ไม่ได้รับอนุญาต", scores: [5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5] }
+            ]
+          }
+        ]
+      }
+    };
+
+    let currentTab = 'advisor';
+    let appState = JSON.parse(JSON.stringify(defaultData));
+
+    // Statistical functions
+    function calculateMean(scores) {
+      if (!scores || scores.length === 0) return 0;
+      const sum = scores.reduce((a, b) => a + b, 0);
+      return sum / scores.length;
+    }
+
+    function calculateSD(scores, mean) {
+      if (!scores || scores.length <= 1) return 0;
+      const variance = scores.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / (scores.length - 1);
+      return Math.sqrt(variance);
+    }
+
+    function interpretScore(mean) {
+      if (mean >= 4.51) return { text: "ดีมาก", badge: "bg-emerald-100 text-emerald-800 border-emerald-300" };
+      if (mean >= 3.51) return { text: "ดี", badge: "bg-blue-100 text-blue-800 border-blue-300" };
+      if (mean >= 2.51) return { text: "ปานกลาง", badge: "bg-amber-100 text-amber-800 border-amber-300" };
+      if (mean >= 1.51) return { text: "น้อย", badge: "bg-orange-100 text-orange-800 border-orange-300" };
+      return { text: "น้อยที่สุด", badge: "bg-rose-100 text-rose-800 border-rose-300" };
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+        btn.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+      });
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-100', 'border', 'border-slate-200');
+        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+      }
+      renderContent();
+    }
+
+    function updateQuestionScores(aspectIdx, qIdx, rawText) {
+      const parsed = rawText.split(/[\s,]+/).map(n => parseFloat(n.trim())).filter(n => !isNaN(n) && n >= 1 && n <= 5);
+      if (parsed.length > 0) {
+        appState[currentTab].aspects[aspectIdx].questions[qIdx].scores = parsed;
+        renderContent();
+      }
+    }
+
+    function copyToClipboard(htmlId) {
+      const element = document.getElementById(htmlId);
+      if (!element) return;
+
+      const range = document.createRange();
+      range.selectNode(element);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+
+      try {
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        showToast("✅ คัดลอกตารางแล้ว! สามารถกด Ctrl + V วางใน Word ได้ทันที");
+      } catch (err) {
+        alert("ไม่สามารถคัดลอกอัตโนมัติได้ กรุณาลากคลุมดำตารางแล้วกด Ctrl+C");
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl font-medium text-sm flex items-center gap-2 border border-slate-700 animate-bounce";
+      toast.innerHTML = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    function renderContent() {
+      const container = document.getElementById('calculator-content');
+      
+      if (currentTab === 'custom') {
+        container.innerHTML = renderCustomCalculator();
+        return;
+      }
+
+      const groupData = appState[currentTab];
+      let overallMeans = [];
+      let overallSDs = [];
+      let aspectSummaryRows = [];
+
+      let aspectsHtml = groupData.aspects.map((aspect, aIdx) => {
+        let questionMeans = [];
+        let questionSDs = [];
+
+        const rowsHtml = aspect.questions.map((q, qIdx) => {
+          const mean = calculateMean(q.scores);
+          const sd = calculateSD(q.scores, mean);
+          const percent = (mean / 5) * 100;
+          const interp = interpretScore(mean);
+
+          questionMeans.push(mean);
+          questionSDs.push(sd);
+
+          return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50/70 transition-colors">
+              <td class="p-3 text-center text-slate-500 font-medium">${aIdx + 1}.${qIdx + 1}</td>
+              <td class="p-3 text-slate-800">
+                <div class="font-medium text-sm">${q.text}</div>
+                <div class="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                  <span>คะแนนดิบ (${q.scores.length} คน):</span>
+                  <input type="text" value="${q.scores.join(', ')}" 
+                    onchange="updateQuestionScores(${aIdx}, ${qIdx}, this.value)"
+                    class="bg-white border border-slate-200 rounded px-2 py-0.5 text-xs text-slate-600 focus:ring-2 focus:ring-blue-400 focus:outline-none w-64 max-w-full"
+                    title="แก้ไขคะแนนแล้วกด Enter เพื่อคำนวณใหม่">
+                </div>
+              </td>
+              <td class="p-3 text-center font-bold text-slate-700 text-sm">${mean.toFixed(2)}</td>
+              <td class="p-3 text-center text-slate-600 text-sm">${sd.toFixed(2)}</td>
+              <td class="p-3 text-center font-semibold text-blue-600 text-sm">${percent.toFixed(2)}%</td>
+              <td class="p-3 text-center">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${interp.badge}">${interp.text}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const aspectAvgMean = calculateMean(questionMeans);
+        const aspectAvgSD = calculateMean(questionSDs);
+        const aspectPercent = (aspectAvgMean / 5) * 100;
+        const aspectInterp = interpretScore(aspectAvgMean);
+
+        overallMeans.push(aspectAvgMean);
+        overallSDs.push(aspectAvgSD);
+
+        aspectSummaryRows.push({
+          num: aIdx + 1,
+          name: aspect.shortName,
+          mean: aspectAvgMean,
+          sd: aspectAvgSD,
+          percent: aspectPercent,
+          interp: aspectInterp
+        });
+
+        const tableId = `table-aspect-${aIdx}`;
+
+        return `
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">ตอนที่ ${aIdx + 1}</span>
+                <h3 class="text-lg font-bold text-slate-800">${aspect.name}</h3>
+              </div>
+              <button onclick="copyToClipboard('${tableId}')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs rounded-xl font-semibold transition-all flex items-center gap-1.5 border border-slate-300">
+                📋 คัดลอกตารางนี้ลง Word
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table id="${tableId}" class="w-full text-left border-collapse academic-font">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-y border-slate-300">
+                    <th class="p-3 text-center w-16">ลำดับ</th>
+                    <th class="p-3">รายการประเมิน</th>
+                    <th class="p-3 text-center w-24">x̄</th>
+                    <th class="p-3 text-center w-24">S.D.</th>
+                    <th class="p-3 text-center w-28">ร้อยละ (%)</th>
+                    <th class="p-3 text-center w-28">แปลผล</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                  <tr class="bg-blue-50/80 font-bold border-t-2 border-slate-300 text-slate-900">
+                    <td colspan="2" class="p-3 text-right">เฉลี่ยประจำด้าน</td>
+                    <td class="p-3 text-center text-blue-700">${aspectAvgMean.toFixed(2)}</td>
+                    <td class="p-3 text-center text-slate-700">${aspectAvgSD.toFixed(2)}</td>
+                    <td class="p-3 text-center text-blue-700">${aspectPercent.toFixed(2)}%</td>
+                    <td class="p-3 text-center">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${aspectInterp.badge}">${aspectInterp.text}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Calculate Total Overall
+      const totalMean = calculateMean(overallMeans);
+      const totalSD = calculateMean(overallSDs);
+      const totalPercent = (totalMean / 5) * 100;
+      const totalInterp = interpretScore(totalMean);
+
+      const summaryTableId = `summary-table-group`;
+
+      const summaryHtml = `
+        <div class="bg-gradient-to-b from-white to-blue-50/30 border-2 border-blue-200 rounded-3xl p-6 shadow-md space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">ตารางสรุปภาพรวม</span>
+              <h2 class="text-xl font-bold text-slate-900 mt-2">ตารางสรุปผลการประเมิน ${groupData.title} ทั้ง 4 ด้าน</h2>
+            </div>
+            <button onclick="copyToClipboard('${summaryTableId}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-xl font-bold shadow-md transition-all flex items-center gap-2">
+              📋 คัดลอกตารางสรุป 4 ด้านลง Word
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table id="${summaryTableId}" class="w-full text-left border-collapse academic-font bg-white rounded-2xl overflow-hidden border border-slate-200">
+              <thead>
+                <tr class="bg-slate-800 text-white text-xs font-bold uppercase tracking-wider">
+                  <th class="p-3 text-center w-16">ลำดับ</th>
+                  <th class="p-3">ด้านการประเมิน</th>
+                  <th class="p-3 text-center w-24">x̄</th>
+                  <th class="p-3 text-center w-24">S.D.</th>
+                  <th class="p-3 text-center w-28">ร้อยละ (%)</th>
+                  <th class="p-3 text-center w-28">แปลผล</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${aspectSummaryRows.map(row => `
+                  <tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="p-3 text-center font-medium text-slate-600">${row.num}</td>
+                    <td class="p-3 font-medium text-slate-800">${row.name}</td>
+                    <td class="p-3 text-center font-bold text-slate-800">${row.mean.toFixed(2)}</td>
+                    <td class="p-3 text-center text-slate-600">${row.sd.toFixed(2)}</td>
+                    <td class="p-3 text-center font-bold text-blue-600">${row.percent.toFixed(2)}%</td>
+                    <td class="p-3 text-center">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${row.interp.badge}">${row.interp.text}</span>
+                    </td>
+                  </tr>
+                `).join('')}
+                <tr class="bg-slate-100 font-bold border-t-2 border-slate-400 text-slate-900 text-base">
+                  <td colspan="2" class="p-3 text-right">เฉลี่ยรวมทั้ง 4 ด้าน</td>
+                  <td class="p-3 text-center text-blue-700 font-extrabold">${totalMean.toFixed(2)}</td>
+                  <td class="p-3 text-center text-slate-800 font-extrabold">${totalSD.toFixed(2)}</td>
+                  <td class="p-3 text-center text-blue-700 font-extrabold">${totalPercent.toFixed(2)}%</td>
+                  <td class="p-3 text-center">
+                    <span class="px-3 py-1 rounded-full text-xs font-bold border ${totalInterp.badge}">${totalInterp.text}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paragraph Summary to paste in Thesis -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 text-sm text-slate-700 leading-relaxed">
+            <div class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+              <span>✍️ ข้อความสรุปสำหรับเขียนใต้ตารางในเล่มบทที่ 4:</span>
+            </div>
+            <p class="italic text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+              "จากตารางสรุปผลการประเมินประสิทธิภาพของ${groupData.title}ทั้ง 4 ด้าน พบว่ามีผลการประเมินอยู่ในระดับ <strong>${totalInterp.text}</strong> โดยมีค่าเฉลี่ย (x̄) เท่ากับ <strong>${totalMean.toFixed(2)}</strong> คิดเป็นร้อยละ <strong>${totalPercent.toFixed(2)}%</strong> และมีค่าส่วนเบี่ยงเบนมาตรฐาน (S.D.) เท่ากับ <strong>${totalSD.toFixed(2)}</strong> ซึ่งผ่านเกณฑ์การยอมรับของระบบ"
+            </p>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = summaryHtml + aspectsHtml;
+    }
+
+    function renderCustomCalculator() {
+      return `
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-800">เครื่องมือคำนวณแบบวางคะแนนอิสระ (Custom Paste)</h2>
+            <p class="text-slate-500 text-sm mt-1">คัดลอกคะแนนจาก Excel หรือ Google Forms มาวางในช่องด้านล่างเพื่อหา x̄, S.D., และ % ได้ทันที</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="font-semibold text-sm text-slate-700">วางคะแนนที่นี่ (คั่นด้วยจุลภาค เคาะวรรค หรือขึ้นบรรทัดใหม่):</label>
+              <textarea id="custom-scores-input" rows="7" 
+                placeholder="เช่น: 5, 5, 4, 5, 5, 4, 5, 5, 4, 5" 
+                class="w-full p-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm"></textarea>
+              <button onclick="calculateCustomSingle()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-md">
+                ⚡ คำนวณผลลัพธ์
+              </button>
+            </div>
+
+            <div id="custom-result-box" class="bg-slate-50 rounded-2xl p-6 border border-slate-200 flex flex-col justify-center items-center text-center space-y-4">
+              <div class="text-slate-400 text-sm">กรอกคะแนนแล้วกดปุ่ม "คำนวณผลลัพธ์"</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function calculateCustomSingle() {
+      const raw = document.getElementById('custom-scores-input').value;
+      const parsed = raw.split(/[\s,]+/).map(n => parseFloat(n.trim())).filter(n => !isNaN(n) && n >= 1 && n <= 5);
+
+      const resultBox = document.getElementById('custom-result-box');
+      if (parsed.length === 0) {
+        resultBox.innerHTML = `<div class="text-rose-600 font-semibold">กรุณากรอกตัวเลขคะแนน 1 ถึง 5 อย่างน้อย 1 ค่า</div>`;
+        return;
+      }
+
+      const mean = calculateMean(parsed);
+      const sd = calculateSD(parsed, mean);
+      const percent = (mean / 5) * 100;
+      const interp = interpretScore(mean);
+
+      resultBox.innerHTML = `
+        <div class="w-full space-y-3">
+          <div class="text-xs font-semibold text-slate-500">จำนวนผู้ตอบทั้งหมด (N): <span class="text-slate-900 font-bold">${parsed.length} คน</span></div>
+          <div class="grid grid-cols-3 gap-3 pt-2">
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs text-slate-400">ค่าเฉลี่ย (x̄)</div>
+              <div class="text-2xl font-extrabold text-blue-600 mt-1">${mean.toFixed(2)}</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs text-slate-400">ส่วนเบี่ยงเบน (S.D.)</div>
+              <div class="text-2xl font-extrabold text-slate-700 mt-1">${sd.toFixed(2)}</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+              <div class="text-xs text-slate-400">ร้อยละ (%)</div>
+              <div class="text-2xl font-extrabold text-indigo-600 mt-1">${percent.toFixed(2)}%</div>
+            </div>
+          </div>
+          <div class="pt-2">
+            <div class="text-xs text-slate-400 mb-1">ระดับการแปลผล</div>
+            <span class="px-4 py-1.5 rounded-full text-sm font-bold border ${interp.badge}">${interp.text}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initial render
+    switchTab('advisor');
+  </script>
+</body>
+</html>
